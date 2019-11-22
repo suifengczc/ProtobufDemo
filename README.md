@@ -1,0 +1,1 @@
+使用Google的Protocol Buffers作为数据的存储通信。Protocol Buffers是一种平台无关的、高效的、自动化的序列化和结构化数据格式

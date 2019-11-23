@@ -1,22 +1,22 @@
-package com.suifeng.protobufdemo
+package com.suifeng.protobufdemo.creator
 
 import com.suifeng.protobufdemo.AddressBookProtos.Person
 
-class AddPerson {
+class PersonCreator {
     companion object {
         fun createPerson(personName: String): Person {
-            var personBuilder = Person.newBuilder()
+            val personBuilder = Person.newBuilder()
             personBuilder.id = 12345
             personBuilder.name = personName
             personBuilder.email = "abc@abc.com"
 
             var phoneNumberBuilder = Person.PhoneNumber.newBuilder()
-            phoneNumberBuilder.number = "12345678911"
+            phoneNumberBuilder.number = "123"
             phoneNumberBuilder.type = Person.PhoneType.HOME
             personBuilder.addPhone(phoneNumberBuilder.build())
 
             phoneNumberBuilder = Person.PhoneNumber.newBuilder()
-            phoneNumberBuilder.number = "10987654321"
+            phoneNumberBuilder.number = "456"
             phoneNumberBuilder.type = Person.PhoneType.MOBILE
             personBuilder.addPhone(phoneNumberBuilder.build())
 

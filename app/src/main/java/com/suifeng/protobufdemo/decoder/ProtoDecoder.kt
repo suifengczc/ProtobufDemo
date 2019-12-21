@@ -1,67 +1,83 @@
 package com.suifeng.protobufdemo.decoder
 
-import com.suifeng.protobufdemo.data.BitData
-import com.suifeng.protobufdemo.data.ProtoMessageData
+import com.suifeng.protobufdemo.data.*
+import java.util.LinkedList
 
-class ProtoDecoder(byteArray: ByteArray) {
-    var originData: Array<BitData>
-    var index: Int
+class ProtoDecoder {
 
-    var messages: MutableList<ProtoMessageData> = mutableListOf<ProtoMessageData>()
-
-
-    init {
-        originData = byteArray.map { it -> BitData(it) }.toTypedArray()
-        index = 0
+    constructor(byteArray: ByteArray) {
+        byteArray.map { BitData(it) }.forEach { originData.add(it) }
     }
 
-    fun decode(): MutableList<ProtoMessageData> {
-        while (index < originData.size) {
+    constructor(bitDataList: MutableList<BitData>) {
+        originData.addAll(bitDataList)
+    }
 
-            val value: MutableList<String> = mutableListOf()
-            val bitData = originData[index]
-            val wireType = bitData.binaryString.substring(5..7).toRadixInt(2)
-            val fieldNum = bitData.binaryString.substring(2..4).toRadixInt(2)
-            when (wireType) {
-                0 -> {
-                    do {
-                        value.add(originData[++index].binaryString)
-                    } while (originData[index].hasNext())
+
+    var originData: LinkedList<BitData> = LinkedList()
+
+    private var messages: DataGroup = DataGroup()
+
+    private var curDataType = DATA_TYPE_WIRE
+    private var curWireType: Int = WIRE_TYPE_0
+
+
+    fun decode(): DataGroup {
+        while (!originData.isEmpty()) {
+            var unitData = createUnitData()
+            var bitData: BitData
+            do {
+                bitData = originData.removeFirst()
+                unitData.addValue(bitData)
+            } while (bitData.hasNext())
+            messages.addData(unitData)
+            curDataType = if (unitData is TypeData) {
+                val wireType = unitData.getWireType()
+                curWireType = wireType.toInt(2)
+                val id = unitData.getID()
+                if (wireType.toInt(2) == 2) {
+                    DATA_TYPE_LENGTH
+                } else {
+                    DATA_TYPE_VALUE
                 }
-                1 -> {
-                    for (i in 0..7) {
-                        value.add(originData[index++].binaryString)
-                    }
+            } else if (unitData is LengthData) {
+                val length = unitData.parseValue().toRadixNum(2)
+                unitData = createUnitData(DATA_TYPE_VALUE, curWireType)
+                for (i in 1..length.toInt()) {
+                    unitData.addValue(originData.removeFirst())
                 }
-                2 -> {
-                    val length = originData[++index].binaryString.toRadixInt(2)
-                    for (i in 0 until length) {
-                        value.add(originData[++index].binaryString)
-                    }
-                }
-                5 -> {
-                    for (i in 0..3) {
-                        value.add(originData[i].binaryString)
-                    }
-                }
-                else -> {
-                }
+                messages.addData(unitData)
+                DATA_TYPE_WIRE
+            } else {
+                DATA_TYPE_WIRE
             }
-            messages.add(
-                ProtoMessageData(
-                    wireType,
-                    fieldNum,
-                    fieldNum,
-                    value
-                )
-            )
-            index++
         }
         return messages
     }
 
+    private fun createUnitData(dataType: Int, wireType: Int): UnitData {
+        return when (dataType) {
+            DATA_TYPE_LENGTH -> LengthData()
+            DATA_TYPE_WIRE -> TypeData()
+            DATA_TYPE_VALUE -> when (wireType) {
+                WIRE_TYPE_0, WIRE_TYPE_1, WIRE_TYPE_5 -> Value1SInt()
+                WIRE_TYPE_2 -> Value2RepeatData()
+                else -> ValueData()
+            }
+            else -> TypeData()
+        }
+    }
+
+    private fun createUnitData(): UnitData {
+        return createUnitData(curDataType, curWireType)
+    }
+
 }
 
-fun String.toRadixInt(radix: Int): Int {
-    return Integer.parseInt(this, radix)
+fun String.toRadixNum(radix: Int): String {
+    return if (this.length > 32) {
+        this.toLong(radix).toString()
+    } else {
+        this.toInt(radix).toString()
+    }
 }

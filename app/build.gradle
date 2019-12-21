@@ -43,7 +43,7 @@ protobuf {
         all().each { task ->
             task.plugins {
                 javalite {}
-                grpc { // Options added to --grpc_out
+                grpc {
                     option 'lite' }
             }
         }

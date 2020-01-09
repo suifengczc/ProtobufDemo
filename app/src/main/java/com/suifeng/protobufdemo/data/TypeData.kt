@@ -5,9 +5,8 @@ package com.suifeng.protobufdemo.data
  */
 class TypeData : UnitData() {
 
-    override fun parseValue(): String {
+    override fun parseValue() {
         parsedValue = concatValueReverse()
-        return parsedValue
     }
 
     /**

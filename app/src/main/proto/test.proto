@@ -3,6 +3,7 @@ option java_package = "com.suifeng.protobufdemo";
 option java_outer_classname = "Test";
 
 message Test1 {
+    // wiretype == 0
     int32 a = 1;
     int64 b = 2;
     uint32 c = 3;
@@ -11,8 +12,23 @@ message Test1 {
     sint64 f = 6;
     bool g = 7;
     PhoneType h = 8;
-    string i = 9;
-    repeated int32 k = 11 [packed=true];
+
+    //wiretype == 1
+    fixed64 i = 9;
+    sfixed64 j = 10;
+    double k = 11;
+
+    //wiretype == 2
+    string l = 12;
+    bytes m = 13;
+    Test2 n = 14;
+    repeated int32 o = 15 [packed = true];
+
+    //wiretype == 5
+    fixed32 p = 16;
+    sfixed32 q = 17;
+    float r = 18;
+
 
     enum PhoneType {
         MOBILE = 0;
@@ -26,6 +42,5 @@ message Test1 {
         int32 a = 1;
     }
 
-    Test2 j = 10;
 
 }

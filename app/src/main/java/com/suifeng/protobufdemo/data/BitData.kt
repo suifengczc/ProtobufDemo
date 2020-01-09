@@ -25,7 +25,7 @@ class BitData(byte: Byte) {
     /**
      * 返回全部8位字节二进制字符串
      */
-    fun getTotalValue():String{
+    fun getTotalValue(): String {
         return binaryString
     }
 

@@ -5,11 +5,15 @@ package com.suifeng.protobufdemo.data
  */
 class LengthData : UnitData() {
 
-    override fun parseValue(): String {
-        return concatValue()
+    override fun parseValue() {
+        parsedValue = concatValue()
+    }
+
+    fun getParsedValue(): Int {
+        return parsedValue.toInt(2)
     }
 
     override fun toString(): String {
-        return "length = ${concatValue().toInt(2)}"
+        return "length = ${parsedValue.toInt(2)}"
     }
 }

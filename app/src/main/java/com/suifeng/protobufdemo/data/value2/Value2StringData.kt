@@ -1,17 +1,18 @@
-package com.suifeng.protobufdemo.data
+package com.suifeng.protobufdemo.data.value2
+
+import com.suifeng.protobufdemo.data.UnitData
 
 /**
  * wiretype == 2时的String数据块
  */
 class Value2StringData : UnitData() {
 
-    override fun parseValue(): String {
+    override fun parseValue(){
         var parse = ""
         value.forEach {
             parse += it.getRealValue().toInt(2).toChar()
         }
         parsedValue = parse
-        return parsedValue
     }
 
     override fun toString(): String {

@@ -42,11 +42,8 @@ fun main() {
         }
     }
     println("---------------------------------------")
-//    val decode = ProtoDecoder(byteArray).decode()
-//    println(decode.toString())
+    val decode = ProtoDecoder(byteArray).decode()
+    println(decode.toString())
 
-    var test1Parse = Test.Test1.parseFrom(byteArray)
-    var a = test1Parse.a
-    println(a)
 
 }

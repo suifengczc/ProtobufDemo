@@ -6,7 +6,7 @@ package com.suifeng.protobufdemo.data
 class LengthData : UnitData() {
 
     override fun parseValue() {
-        parsedValue = concatValue()
+        parsedValue = concatValueReverse()
     }
 
     fun getParsedValue(): Int {
